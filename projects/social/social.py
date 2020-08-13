@@ -1,3 +1,5 @@
+import random
+from util import Queue , Stack
 class User:
     def __init__(self, name):
         self.name = name
@@ -13,13 +15,15 @@ class SocialGraph:
         Creates a bi-directional friendship
         """
         if user_id == friend_id:
-            print("WARNING: You cannot be friends with yourself")
+            # print("WARNING: You cannot be friends with yourself")
+            return False
         elif friend_id in self.friendships[user_id] or user_id in self.friendships[friend_id]:
-            print("WARNING: Friendship already exists")
+            # print("WARNING: Friendship already exists")
+            return False
         else:
             self.friendships[user_id].add(friend_id)
             self.friendships[friend_id].add(user_id)
-
+            return True
     def add_user(self, name):
         """
         Create a new user with a sequential integer ID
@@ -45,8 +49,31 @@ class SocialGraph:
         # !!!! IMPLEMENT ME
 
         # Add users
+        for i in range(0, num_users):
+            self.add_user(f"User {i}")
 
         # Create friendships
+        # generate all possible friendship combinations
+        possible_friendships = []
+
+        # avoid dups by ensuring first num < second num
+        for user_id in self.users:
+            for friend_id in range(user_id + 1, self.last_id + 1):
+                possible_friendships.append((user_id, friend_id))
+
+        # shuffle friendships
+        random.shuffle(possible_friendships)
+
+        # create friendships from the first N pairs of the list
+        # N -> num_users * avg_friendships // 2
+        N = num_users * avg_friendships // 2
+        for i in range(N):
+            friendship = possible_friendships[i]
+            # user_id, friend_id = friendship
+            user_id = friendship[0]
+            friend_id = friendship[1]
+            self.add_friendship(user_id, friend_id)
+
 
     def get_all_social_paths(self, user_id):
         """
@@ -57,14 +84,33 @@ class SocialGraph:
 
         The key is the friend's ID and the value is the path.
         """
-        visited = {}  # Note that this is a dictionary, not a set
+         # Note that this is a dictionary, not a set
         # !!!! IMPLEMENT ME
-        return visited
+        # need to implement a BFT
+        q = Queue()
+        # add the starting node to said stack
+        q.enqueue([user_id])
+        # use a set for breadcrumbs
+        visited = {}
+        # while there are still vertices scheduled to be visited
+        while q.size() > 0:
+            # remove the first item, since you're visiting it right now
+            path = q.dequeue()
+            current_vertex = path[-1]
+            # if we have not visited this one
+            if current_vertex not in visited:
+                visited[current_vertex] = path
+
+                for friend in self.friendships[current_vertex]:
+                    path_copy = list(path)
+                    path_copy.append(friend)
+                    q.enqueue(path_copy)
+            return visited
 
 
 if __name__ == '__main__':
     sg = SocialGraph()
-    sg.populate_graph(10, 2)
-    print(sg.friendships)
+    sg.populate_graph(1000, 5)
+    sg.friendships
     connections = sg.get_all_social_paths(1)
-    print(connections)
+    print(connections,'VISITED')
