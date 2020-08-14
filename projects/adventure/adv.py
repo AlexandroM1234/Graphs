@@ -39,6 +39,8 @@ def exits (room):
     return directions
         
 print(exits(player.current_room.id))
+
+
 # TRAVERSAL TEST
 visited_rooms = set()
 player.current_room = world.starting_room
