@@ -28,16 +28,17 @@ player = Player(world.starting_room)
 # Fill this out with directions to walk
 # traversal_path = ['n', 'n']
 traversal_path = []
-moving = True
-exits = player.current_room.get_exits()
-while moving:
-    if exits not in traversal_path:
-        traversal_path.append(exits)
-        for exits in exits:
-            player.travel(exits)
-    else:
-        moving = False
-        print(player.current_room.id,'this')
+
+traversal_graph = {player.current_room.id: {d:"?" for d in player.current_room.get_exits()}}
+
+def exits (room):
+    directions = []
+    for d in traversal_graph[room]:
+        if traversal_graph[room][d] == "?":
+            directions.append(d)
+    return directions
+        
+print(exits(player.current_room.id))
 # TRAVERSAL TEST
 visited_rooms = set()
 player.current_room = world.starting_room
