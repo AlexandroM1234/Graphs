@@ -59,24 +59,31 @@ class Graph:
         Print each vertex in depth-first order
         beginning from starting_vertex.
         """
+        # create a stack
         s = Stack()
-        s.push(starting_vertex)
-        # create a set to store the visited vertices
+        # add the starting node to said stack
+        s.push([starting_vertex])
+        # use a set for breadcrumbs
         visited = set()
-        # while the stack is not empty
+        path = []
+        # while there are still vertices scheduled to be visited
         while s.size() > 0:
-            # pop the first vertex
-            vertex = s.pop()
-            # if vertex has not been visited
-            if vertex not in visited:
-                # mark the vertex as visited
-                visited.add(vertex)
-                # print the marked vertex
-                print(vertex)
-                # add all of its neighbors to the top of the stack
-                for next_vertex in self.get_neighbors(vertex):
-                    s.push(next_vertex)
-
+            # remove the first item, since you're visiting it right now
+            c = s.pop()
+            current_vertex = c[-1]
+            # if we have not visited this one yet
+            path.append(c)
+            if current_vertex not in visited:
+                visited.add(current_vertex)
+                # go through the neighbors
+                for next_vertex in self.get_neighbors(current_vertex):
+                    # schedule the node to visit it later
+                    print(next_vertex)
+                    path_copy = list(c)
+                    path_copy.append(next_vertex)
+                    # add the new path to the list of possibilities in the scheduled stack
+                    s.push(path_copy)
+        return path
 
     def dft_recursive(self, starting_vertex,visited=None):
         """
@@ -232,7 +239,7 @@ if __name__ == '__main__':
         1, 2, 4, 7, 6, 3, 5
         1, 2, 4, 6, 3, 5, 7
     '''
-    graph.dft(1)
+    print(graph.dft(1),"wowow")
     graph.dft_recursive(1)
 
     '''
@@ -248,3 +255,5 @@ if __name__ == '__main__':
     '''
     print(graph.dfs(1, 6))
     print(graph.dfs_recursive(1, 6))
+
+
